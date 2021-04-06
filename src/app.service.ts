@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 import { BehaviorSubject } from 'rxjs';
 
@@ -39,15 +39,15 @@ export class AppService {
           },
           (err) => {
             unspent$.next([]);
-            console.log('error retrieving listunspent');
-            console.log(err);
+            Logger.error('error retrieving listunspent');
+            Logger.error(err);
           },
         );
       },
       (err) => {
         unspent$.next([]);
-        console.log('error executing importaddress');
-        console.log(err);
+        Logger.error('error executing importaddress');
+        Logger.error(err);
       },
     );
 
