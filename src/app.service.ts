@@ -26,6 +26,21 @@ export class AppService {
 
     this.walletClient = new WalletClient(walletOptions);
     this.client = new NodeClient(clientOptions);
+
+    (async () => {
+      const watchOnlyId = 'watchOnly';
+      const result = await this.walletClient.createWallet(watchOnlyId, {
+        witness: false,
+        watchOnly: true,
+      });
+      Logger.warn('watch only wallet');
+      Logger.warn(result);
+      const watchOnlySelectResult = await this.walletClient.execute(
+        'selectwallet',
+        [watchOnlyId],
+      );
+      Logger.warn(watchOnlySelectResult);
+    })();
   }
 
   getUnspent(address: string): BehaviorSubject<any> {
