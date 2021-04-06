@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { BehaviorSubject } from 'rxjs';
 
-import { NodeClient, WalletClient } from 'bclient';
+import { NodeClient, WalletClient, Network } from 'litedoge';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -11,19 +11,21 @@ export class AppService {
   private client;
 
   constructor(private configService: ConfigService) {
+    const network = Network.get('main');
+
     const walletOptions = {
-      network: 'main',
-      port: this.configService.get<number>('WALLET_PORT'),
+      network: network.type,
+      port: network.walletPort,
       apiKey: this.configService.get<string>('WALLET_API_KEY'),
     };
     const clientOptions = {
-      network: 'main',
-      port: this.configService.get<number>('WALLET_RPCPORT'),
+      network: network.type,
+      port: network.rpcPort,
       apiKey: this.configService.get<string>('WALLET_API_KEY'),
     };
 
     this.walletClient = new WalletClient(walletOptions);
-    this.client = new WalletClient(clientOptions);
+    this.client = new NodeClient(clientOptions);
   }
 
   getUnspent(address: string): BehaviorSubject<any> {
