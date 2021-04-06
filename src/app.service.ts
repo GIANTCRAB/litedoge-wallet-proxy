@@ -28,8 +28,16 @@ export class AppService {
     this.client = new NodeClient(clientOptions);
 
     (async () => {
+      const primaryId = 'primary';
+      const mainAccount = 'default';
+      const wallet = this.walletClient.wallet(primaryId);
+      const accountRetrieved = await wallet.getAccount(mainAccount);
+      Logger.warn('retrieving primary account');
+      Logger.warn(accountRetrieved);
+
       const watchOnlyId = 'watchOnly';
       const result = await this.walletClient.createWallet(watchOnlyId, {
+        accountKey: accountRetrieved.accountKey,
         witness: false,
         watchOnly: true,
       });
