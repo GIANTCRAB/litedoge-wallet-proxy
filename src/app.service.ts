@@ -3,18 +3,21 @@ import { Injectable } from '@nestjs/common';
 import { BehaviorSubject } from 'rxjs';
 
 import { NodeClient, WalletClient } from 'bclient';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AppService {
+  constructor(private configService: ConfigService) {}
+
   private walletOptions = {
     network: 'main',
-    port: process.env.WALLET_PORT,
-    apiKey: process.env.WALLET_API_KEY,
+    port: this.configService.get<number>('WALLET_PORT'),
+    apiKey: this.configService.get<string>('WALLET_API_KEY'),
   };
   private clientOptions = {
     network: 'main',
-    port: process.env.WALLET_RPCPORT,
-    apiKey: process.env.WALLET_API_KEY,
+    port: this.configService.get<number>('WALLET_RPCPORT'),
+    apiKey: this.configService.get<string>('WALLET_API_KEY'),
   };
   private walletClient = new WalletClient(this.walletOptions);
   private client = new NodeClient(this.clientOptions);
