@@ -28,26 +28,25 @@ export class AppService {
     this.client = new NodeClient(clientOptions);
 
     (async () => {
+      Logger.warn('retrieving primary account');
       const primaryId = 'primary';
       const mainAccount = 'default';
       const wallet = this.walletClient.wallet(primaryId);
       const accountRetrieved = await wallet.getAccount(mainAccount);
-      Logger.warn('retrieving primary account');
-      Logger.warn(accountRetrieved);
 
+      Logger.warn('creating watch only wallet');
       const watchOnlyId = 'watchOnly';
       const result = await this.walletClient.createWallet(watchOnlyId, {
         accountKey: accountRetrieved.accountKey,
         witness: false,
         watchOnly: true,
       });
-      Logger.warn('watch only wallet');
-      Logger.warn(result);
+      Logger.warn('selecting watch only wallet');
       const watchOnlySelectResult = await this.walletClient.execute(
         'selectwallet',
         [watchOnlyId],
       );
-      Logger.warn(watchOnlySelectResult);
+      Logger.warn('watch only process completed');
     })();
   }
 
@@ -59,6 +58,7 @@ export class AppService {
         this.walletClient.execute('listunspent', [5, 9999999, [address]]).then(
           (result) => {
             unspent$.next(result);
+            Logger.warn('results retrieved');
           },
           (err) => {
             unspent$.next([]);
