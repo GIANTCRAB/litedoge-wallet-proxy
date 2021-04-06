@@ -39,11 +39,15 @@ export class AppService {
           },
           (err) => {
             unspent$.next([]);
+            console.log('error retrieving listunspent');
+            console.log(err);
           },
         );
       },
       (err) => {
         unspent$.next([]);
+        console.log('error executing importaddress');
+        console.log(err);
       },
     );
 
