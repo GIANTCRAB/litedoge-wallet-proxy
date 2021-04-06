@@ -7,20 +7,24 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AppService {
-  constructor(private configService: ConfigService) {}
+  private walletClient;
+  private client;
 
-  private walletOptions = {
-    network: 'main',
-    port: this.configService.get<number>('WALLET_PORT'),
-    apiKey: this.configService.get<string>('WALLET_API_KEY'),
-  };
-  private clientOptions = {
-    network: 'main',
-    port: this.configService.get<number>('WALLET_RPCPORT'),
-    apiKey: this.configService.get<string>('WALLET_API_KEY'),
-  };
-  private walletClient = new WalletClient(this.walletOptions);
-  private client = new NodeClient(this.clientOptions);
+  constructor(private configService: ConfigService) {
+    const walletOptions = {
+      network: 'main',
+      port: this.configService.get<number>('WALLET_PORT'),
+      apiKey: this.configService.get<string>('WALLET_API_KEY'),
+    };
+    const clientOptions = {
+      network: 'main',
+      port: this.configService.get<number>('WALLET_RPCPORT'),
+      apiKey: this.configService.get<string>('WALLET_API_KEY'),
+    };
+
+    this.walletClient = new WalletClient(walletOptions);
+    this.client = new WalletClient(clientOptions);
+  }
 
   getUnspent(address: string): BehaviorSubject<any> {
     const unspent$ = new BehaviorSubject(null);
