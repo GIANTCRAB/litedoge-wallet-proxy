@@ -31,21 +31,21 @@ export class AppService {
       Logger.warn('retrieving primary account');
       const primaryId = 'primary';
       const mainAccount = 'default';
+      const watchOnlyId = 'watchOnly';
       const wallet = this.walletClient.wallet(primaryId);
       const accountRetrieved = await wallet.getAccount(mainAccount);
 
-      Logger.warn('creating watch only wallet');
-      const watchOnlyId = 'watchOnly';
-      const result = await this.walletClient.createWallet(watchOnlyId, {
-        accountKey: accountRetrieved.accountKey,
-        witness: false,
-        watchOnly: true,
-      });
+      const watchOnlyWallet = this.walletClient.wallet(watchOnlyId);
+      if (!watchOnlyWallet) {
+        Logger.warn('creating watch only wallet');
+        const result = await this.walletClient.createWallet(watchOnlyId, {
+          accountKey: accountRetrieved.accountKey,
+          witness: false,
+          watchOnly: true,
+        });
+      }
       Logger.warn('selecting watch only wallet');
-      const watchOnlySelectResult = await this.walletClient.execute(
-        'selectwallet',
-        [watchOnlyId],
-      );
+      await this.walletClient.execute('selectwallet', [watchOnlyId]);
       Logger.warn('watch only process completed');
     })();
   }
