@@ -52,7 +52,7 @@ export class AppService {
 
   getUnspent(address: string): BehaviorSubject<any> {
     const unspent$ = new BehaviorSubject(null);
-    this.walletClient.execute('importaddress', [address]).then(
+    this.walletClient.execute('importaddress', [address, 'nolabel', true]).then(
       () => {
         // Execute after import
         this.walletClient.execute('listunspent', [5, 9999999, [address]]).then(
