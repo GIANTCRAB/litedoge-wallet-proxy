@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 
 import { BehaviorSubject } from 'rxjs';
 
-import { WalletClient, NodeClient } from 'bcoin';
+import { NodeClient, WalletClient } from 'bclient';
 
 @Injectable()
 export class AppService {
