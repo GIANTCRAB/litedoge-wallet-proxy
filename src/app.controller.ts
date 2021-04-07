@@ -27,7 +27,7 @@ export class AppController {
       if (transactionId || transactionId === '') {
         transactionId$.complete();
         if (transactionId === '') {
-          res.status(401).json({ msg: 'Transaction could not be pushed' });
+          res.status(400).json({ msg: 'Transaction could not be pushed' });
         } else {
           res
             .status(201)
