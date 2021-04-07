@@ -36,7 +36,6 @@ export class AppService {
       const watchOnlyId = 'watchOnly';
       const wallet = this.walletClient.wallet(primaryId);
       const accountRetrieved = await wallet.getAccount(mainAccount);
-      Logger.warn(JSON.stringify(accountRetrieved));
 
       const watchOnlyWallet = this.walletClient.wallet(watchOnlyId);
       if (!watchOnlyWallet) {
@@ -58,6 +57,7 @@ export class AppService {
     const unspent$ = new BehaviorSubject(null);
     this.client.execute('validateaddress', [address]).then(
       (validationResult) => {
+        Logger.warn(JSON.stringify(validationResult));
         if (validationResult.isvalid) {
           this.walletClient.execute('importaddress', [address]).then(
             () => {
