@@ -105,7 +105,17 @@ export class AppService {
     return unspent$;
   }
 
-  pushTransaction(transactionHex: string) {
-    this.client.execute('sendrawtransaction', [transactionHex]);
+  pushTransaction(transactionHex: string): BehaviorSubject<string> {
+    const transactionResult$ = new BehaviorSubject(null);
+    this.client.execute('sendrawtransaction', [transactionHex]).then(
+      (result) => {
+        transactionResult$.next(result);
+      },
+      (err) => {
+        transactionResult$.next('');
+      },
+    );
+
+    return transactionResult$;
   }
 }

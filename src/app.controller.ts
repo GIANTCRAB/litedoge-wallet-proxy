@@ -20,8 +20,20 @@ export class AppController {
 
   @Post('/transactions')
   postTransaction(@Req() req: Request, @Res() res: Response) {
-    this.appService.pushTransaction(req.body.transactionData);
-
-    res.json({ msg: 'Transaction pushed' });
+    const transactionId$ = this.appService.pushTransaction(
+      req.body.transactionData,
+    );
+    transactionId$.subscribe((transactionId) => {
+      if (transactionId || transactionId === '') {
+        transactionId$.complete();
+        if (transactionId === '') {
+          res.status(401).json({ msg: 'Transaction could not be pushed' });
+        } else {
+          res
+            .status(201)
+            .json({ msg: 'Transaction pushed', txid: transactionId });
+        }
+      }
+    });
   }
 }
