@@ -110,10 +110,16 @@ export class AppService {
     Logger.warn(transactionHex);
     const transactionResult$ = new BehaviorSubject(null);
     (async () => {
-      const result = await this.client.execute('decoderawtransaction', [
-        transactionHex,
-      ]);
-      Logger.warn(JSON.stringify(result));
+      this.client.execute('decoderawtransaction', [transactionHex]).then(
+        (result) => {
+          Logger.warn('decoded');
+          Logger.warn(JSON.stringify(result));
+        },
+        (err) => {
+          Logger.error('error decoding');
+          Logger.error(JSON.stringify(err));
+        },
+      );
     })();
     this.client.execute('sendrawtransaction', [transactionHex]).then(
       (result) => {
