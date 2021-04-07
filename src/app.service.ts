@@ -16,11 +16,13 @@ export class AppService {
     const walletOptions = {
       network: network.type,
       port: network.walletPort,
+      timeout: 60000,
       apiKey: this.configService.get<string>('WALLET_API_KEY'),
     };
     const clientOptions = {
       network: network.type,
       port: network.rpcPort,
+      timeout: 60000,
       apiKey: this.configService.get<string>('WALLET_API_KEY'),
     };
 
