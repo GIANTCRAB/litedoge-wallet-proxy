@@ -62,10 +62,10 @@ export class AppService {
             () => {
               // Execute after import
               this.walletClient
-                .execute('listreceivedbyaddress', [address, minConf])
+                .execute('listreceivedbyaddress', [minConf, true, true])
                 .then(
                   (result) => {
-                    Logger.warn('amount received by address');
+                    Logger.warn('amount received by imported addresses');
                     Logger.warn(JSON.stringify(result));
                   },
                   (err) => {
