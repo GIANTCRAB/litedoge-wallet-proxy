@@ -65,7 +65,7 @@ export class AppService {
             unspent$.next(result);
             Logger.warn('results retrieved');
             Logger.warn(address);
-            Logger.warn(result);
+            Logger.warn(JSON.stringify(result));
           },
           (err) => {
             unspent$.next([]);
