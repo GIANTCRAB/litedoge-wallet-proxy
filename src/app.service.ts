@@ -57,10 +57,7 @@ export class AppService {
     this.walletClient.execute('importaddress', [address]).then(
       async () => {
         // Execute after import
-        const result = await this.walletClient.rescan(1);
-        Logger.warn('rescan');
-        Logger.warn(result);
-        this.walletClient.execute('listunspent', [5, 9999999, [address]]).then(
+        this.walletClient.execute('listunspent', [3, 9999999, [address]]).then(
           (result) => {
             unspent$.next(result);
             Logger.warn('results retrieved');
