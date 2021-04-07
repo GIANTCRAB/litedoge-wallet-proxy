@@ -9,7 +9,9 @@ import { ConfigService } from '@nestjs/config';
 export class AppService {
   private walletClient;
   private client;
+  private accountId = 'default';
   private watchOnlyId = 'watchOnly';
+  private watchOnlyWallet;
 
   constructor(private configService: ConfigService) {
     const network = Network.get('main');
@@ -40,11 +42,16 @@ export class AppService {
       const watchOnlyWallet = this.walletClient.wallet(this.watchOnlyId);
       if (!watchOnlyWallet) {
         Logger.warn('creating watch only wallet');
-        await this.walletClient.createWallet(this.watchOnlyId, {
-          accountKey: accountRetrieved.accountKey,
-          witness: false,
-          watchOnly: true,
-        });
+        this.watchOnlyWallet = await this.walletClient.createWallet(
+          this.watchOnlyId,
+          {
+            accountKey: accountRetrieved.accountKey,
+            witness: false,
+            watchOnly: true,
+          },
+        );
+      } else {
+        this.watchOnlyWallet = watchOnlyWallet;
       }
       Logger.warn('selecting watch only wallet');
       await this.walletClient.execute('selectwallet', [this.watchOnlyId]);
@@ -59,7 +66,7 @@ export class AppService {
       (validationResult) => {
         Logger.warn(JSON.stringify(validationResult));
         if (validationResult.isvalid) {
-          this.walletClient.importAddress(this.watchOnlyId, address).then(
+          this.watchOnlyWallet.importAddress(this.accountId, address).then(
             (result) => {
               if (result.success) {
                 this.walletClient
