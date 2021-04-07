@@ -57,6 +57,11 @@ export class AppService {
     this.walletClient.execute('importaddress', [address]).then(
       async () => {
         // Execute after import
+        const result = await this.walletClient.execute('getreceivedbyaddress', [
+          address,
+        ]);
+        Logger.warn('amount received by address');
+        Logger.warn(JSON.stringify(result));
         this.walletClient.execute('listunspent', [3, 9999999, [address]]).then(
           (result) => {
             unspent$.next(result);
