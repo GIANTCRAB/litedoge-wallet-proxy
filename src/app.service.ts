@@ -55,13 +55,18 @@ export class AppService {
   getUnspent(address: string): BehaviorSubject<any> {
     const unspent$ = new BehaviorSubject(null);
     this.walletClient.execute('importaddress', [address]).then(
-      async () => {
+      () => {
         // Execute after import
-        const result = await this.walletClient.execute('getreceivedbyaddress', [
-          address,
-        ]);
-        Logger.warn('amount received by address');
-        Logger.warn(JSON.stringify(result));
+        this.walletClient.execute('getreceivedbyaddress', [address]).then(
+          (result) => {
+            Logger.warn('amount received by address');
+            Logger.warn(JSON.stringify(result));
+          },
+          (err) => {
+            Logger.warn('error');
+            Logger.warn(err);
+          },
+        );
         this.walletClient.execute('listunspent', [3, 9999999, [address]]).then(
           (result) => {
             unspent$.next(result);
