@@ -36,6 +36,7 @@ export class AppService {
       const watchOnlyId = 'watchOnly';
       const wallet = this.walletClient.wallet(primaryId);
       const accountRetrieved = await wallet.getAccount(mainAccount);
+      Logger.warn(JSON.stringify(accountRetrieved));
 
       const watchOnlyWallet = this.walletClient.wallet(watchOnlyId);
       if (!watchOnlyWallet) {
