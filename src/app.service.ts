@@ -57,7 +57,7 @@ export class AppService {
     this.walletClient.execute('importaddress', [address]).then(
       () => {
         // Execute after import
-        this.walletClient.execute('getreceivedbyaddress', [address]).then(
+        this.walletClient.execute('getreceivedbyaddress', [address, 0]).then(
           (result) => {
             Logger.warn('amount received by address');
             Logger.warn(JSON.stringify(result));
