@@ -106,6 +106,8 @@ export class AppService {
   }
 
   pushTransaction(transactionHex: string): BehaviorSubject<string> {
+    Logger.warn('transaction hex');
+    Logger.warn(transactionHex);
     const transactionResult$ = new BehaviorSubject(null);
     this.client.execute('sendrawtransaction', [transactionHex]).then(
       (result) => {
