@@ -16,13 +16,13 @@ export class AppService {
     const walletOptions = {
       network: network.type,
       port: network.walletPort,
-      timeout: 60000,
+      timeout: 10000,
       apiKey: this.configService.get<string>('WALLET_API_KEY'),
     };
     const clientOptions = {
       network: network.type,
       port: network.rpcPort,
-      timeout: 60000,
+      timeout: 10000,
       apiKey: this.configService.get<string>('WALLET_API_KEY'),
     };
 
@@ -54,9 +54,12 @@ export class AppService {
 
   getUnspent(address: string): BehaviorSubject<any> {
     const unspent$ = new BehaviorSubject(null);
-    this.walletClient.execute('importaddress', [address, 'nolabel', true]).then(
-      () => {
+    this.walletClient.execute('importaddress', [address]).then(
+      async () => {
         // Execute after import
+        const result = await this.walletClient.rescan(1);
+        Logger.warn('rescan');
+        Logger.warn(result);
         this.walletClient.execute('listunspent', [5, 9999999, [address]]).then(
           (result) => {
             unspent$.next(result);
