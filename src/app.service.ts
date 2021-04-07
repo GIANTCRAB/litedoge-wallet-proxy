@@ -53,6 +53,7 @@ export class AppService {
   }
 
   getUnspent(address: string): BehaviorSubject<any> {
+    const minConf = 3;
     const unspent$ = new BehaviorSubject(null);
     this.client.execute('validateaddress', [address]).then(
       (validationResult) => {
@@ -61,7 +62,7 @@ export class AppService {
             () => {
               // Execute after import
               this.walletClient
-                .execute('listreceivedbyaddress', [address])
+                .execute('listreceivedbyaddress', [address, minConf])
                 .then(
                   (result) => {
                     Logger.warn('amount received by address');
@@ -73,7 +74,7 @@ export class AppService {
                   },
                 );
               this.walletClient
-                .execute('listunspent', [3, 9999999, [address]])
+                .execute('listunspent', [minConf, 9999999, [address]])
                 .then(
                   (result) => {
                     unspent$.next(result);
