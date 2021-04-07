@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 export class AppService {
   private walletClient;
   private client;
+  private watchOnlyId = 'watchOnly';
 
   constructor(private configService: ConfigService) {
     const network = Network.get('main');
@@ -33,21 +34,20 @@ export class AppService {
       Logger.warn('retrieving primary account');
       const primaryId = 'primary';
       const mainAccount = 'default';
-      const watchOnlyId = 'watchOnly';
       const wallet = this.walletClient.wallet(primaryId);
       const accountRetrieved = await wallet.getAccount(mainAccount);
 
-      const watchOnlyWallet = this.walletClient.wallet(watchOnlyId);
+      const watchOnlyWallet = this.walletClient.wallet(this.watchOnlyId);
       if (!watchOnlyWallet) {
         Logger.warn('creating watch only wallet');
-        const result = await this.walletClient.createWallet(watchOnlyId, {
+        await this.walletClient.createWallet(this.watchOnlyId, {
           accountKey: accountRetrieved.accountKey,
           witness: false,
           watchOnly: true,
         });
       }
       Logger.warn('selecting watch only wallet');
-      await this.walletClient.execute('selectwallet', [watchOnlyId]);
+      await this.walletClient.execute('selectwallet', [this.watchOnlyId]);
       Logger.warn('watch only process completed');
     })();
   }
@@ -59,36 +59,28 @@ export class AppService {
       (validationResult) => {
         Logger.warn(JSON.stringify(validationResult));
         if (validationResult.isvalid) {
-          this.walletClient.execute('importaddress', [address]).then(
-            () => {
-              // Execute after import
-              this.walletClient
-                .execute('listreceivedbyaddress', [minConf, true, true])
-                .then(
-                  (result) => {
-                    Logger.warn('amount received by imported addresses');
-                    Logger.warn(JSON.stringify(result));
-                  },
-                  (err) => {
-                    Logger.warn('error');
-                    Logger.warn(err);
-                  },
-                );
-              this.walletClient
-                .execute('listunspent', [minConf, 9999999, [address]])
-                .then(
-                  (result) => {
-                    unspent$.next(result);
-                    Logger.warn('results retrieved');
-                    Logger.warn(address);
-                    Logger.warn(JSON.stringify(result));
-                  },
-                  (err) => {
-                    unspent$.next([]);
-                    Logger.error('error retrieving listunspent');
-                    Logger.error(err);
-                  },
-                );
+          this.walletClient.importAddress(this.watchOnlyId, address).then(
+            (result) => {
+              if (result.success) {
+                this.walletClient
+                  .execute('listunspent', [minConf, 9999999, [address]])
+                  .then(
+                    (result) => {
+                      unspent$.next(result);
+                      Logger.warn('results retrieved');
+                      Logger.warn(address);
+                      Logger.warn(JSON.stringify(result));
+                    },
+                    (err) => {
+                      unspent$.next([]);
+                      Logger.error('error retrieving listunspent');
+                      Logger.error(err);
+                    },
+                  );
+              } else {
+                unspent$.next([]);
+                Logger.error('failed to importaddress');
+              }
             },
             (err) => {
               unspent$.next([]);
