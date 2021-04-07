@@ -67,34 +67,29 @@ export class AppService {
         Logger.warn(JSON.stringify(validationResult));
         if (validationResult.isvalid) {
           this.watchOnlyWallet.importAddress(this.accountId, address).then(
-            (result) => {
-              if (result.success) {
-                this.walletClient
-                  .execute('listunspent', [minConf, 9999999, [address]])
-                  .then(
-                    (result) => {
-                      unspent$.next(result);
-                      Logger.warn('results retrieved');
-                      Logger.warn(address);
-                      Logger.warn(JSON.stringify(result));
-                    },
-                    (err) => {
-                      unspent$.next([]);
-                      Logger.error('error retrieving listunspent');
-                      Logger.error(err);
-                    },
-                  );
-              } else {
-                unspent$.next([]);
-                Logger.error('failed to importaddress');
-              }
+            () => {
+              Logger.warn('imported');
             },
             (err) => {
-              unspent$.next([]);
               Logger.error('error executing importaddress');
               Logger.error(err);
             },
           );
+          this.walletClient
+            .execute('listunspent', [minConf, 9999999, [address]])
+            .then(
+              (result) => {
+                unspent$.next(result);
+                Logger.warn('results retrieved');
+                Logger.warn(address);
+                Logger.warn(JSON.stringify(result));
+              },
+              (err) => {
+                unspent$.next([]);
+                Logger.error('error retrieving listunspent');
+                Logger.error(err);
+              },
+            );
         } else {
           unspent$.next([]);
           Logger.error('invalid address');
