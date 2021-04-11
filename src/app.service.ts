@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 
 import { BehaviorSubject } from 'rxjs';
 
-import { NodeClient, WalletClient, Network } from 'litedoge';
+import { NodeClient, WalletClient, Network } from 'ldogejs';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
