@@ -64,7 +64,6 @@ export class AppService {
     const unspent$ = new BehaviorSubject(null);
     this.client.execute('validateaddress', [address]).then(
       (validationResult) => {
-        Logger.warn(JSON.stringify(validationResult));
         if (validationResult.isvalid) {
           this.watchOnlyWallet.importAddress(this.accountId, address).then(
             () => {
@@ -80,25 +79,17 @@ export class AppService {
             .then(
               (result) => {
                 unspent$.next(result);
-                Logger.warn('results retrieved');
-                Logger.warn(address);
-                Logger.warn(JSON.stringify(result));
               },
-              (err) => {
+              () => {
                 unspent$.next([]);
-                Logger.error('error retrieving listunspent');
-                Logger.error(err);
               },
             );
         } else {
           unspent$.next([]);
-          Logger.error('invalid address');
         }
       },
-      (err) => {
+      () => {
         unspent$.next([]);
-        Logger.error('error executing validateaddress');
-        Logger.error(err);
       },
     );
 
@@ -106,26 +97,12 @@ export class AppService {
   }
 
   pushTransaction(transactionHex: string): BehaviorSubject<string> {
-    Logger.warn('transaction hex');
-    Logger.warn(transactionHex);
     const transactionResult$ = new BehaviorSubject(null);
-    (async () => {
-      this.client.execute('decoderawtransaction', [transactionHex]).then(
-        (result) => {
-          Logger.warn('decoded');
-          Logger.warn(JSON.stringify(result));
-        },
-        (err) => {
-          Logger.error('error decoding');
-          Logger.error(JSON.stringify(err));
-        },
-      );
-    })();
     this.client.execute('sendrawtransaction', [transactionHex]).then(
       (result) => {
         transactionResult$.next(result);
       },
-      (err) => {
+      () => {
         transactionResult$.next('');
       },
     );
