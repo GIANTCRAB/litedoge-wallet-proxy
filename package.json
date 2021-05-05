@@ -25,7 +25,7 @@
     "@nestjs/config": "^0.6.3",
     "@nestjs/core": "^7.6.15",
     "@nestjs/platform-express": "^7.6.15",
-    "ldogejs": "git+https://github.com/skyrawrcode/litedoge-js.git",
+    "ldogejs": "git+https://github.com/ldoge/litedoge-js.git",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.7"
